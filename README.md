@@ -30,29 +30,46 @@ The system utilizes a heterogeneous architecture where the ARM CPU handles netwo
 
 ![System Architecture](Docs/architecture.png)
 
-## 📊 Performance & Power Analysis
+## ⚙️ Hardware Implementation Results
 
-The following benchmark compares the execution time and power efficiency of the FAST algorithm running on the **ARM Cortex-A53 CPU (OpenCV implementation)** versus the **FPGA Hardware Accelerator**.
+The hardware accelerator is implemented on the **Xilinx Zynq UltraScale+** FPGA. The following data is obtained from the Vivado post-implementation reports.
 
-### 1. Speedup Analysis
+### 1. Resource Utilization
+The FAST Corner Detector IP utilizes approximately 36% of the available LUTs, demonstrating a balanced trade-off between hardware complexity and performance.
+
+| Resource | Utilization | Available | Utilization % |
+| :--- | :--- | :--- | :--- |
+| **LUT** (Look-Up Tables) | 42,498 | 117,120 | **36.29 %** |
+| **LUTRAM** | 1,400 | 57,600 | **2.43 %** |
+| **FF** (Flip-Flops) | 39,715 | 234,240 | **16.95 %** |
+| **BRAM** (Block RAM) | 6.50 | 144 | **4.51 %** |
+
+![Resource Utilization](Docs/utilization.png)
+> *Vivado post-implementation utilization report.*
+
+### 2. Power Consumption
+Total on-chip power consumption is **3.301 W**. Notably, the FPGA Programmable Logic (PL) itself consumes significantly less power compared to the Processing System (PS), proving the extreme energy efficiency of the hardware accelerator.
+
+| Power Component | Consumption (Watts) | Note |
+| :--- | :--- | :--- |
+| **Dynamic Power** | **2.871 W** | PS: ~2.732W (94%), PL: ~0.139W (6%) |
+| **Device Static Power** | **0.430 W** | |
+| **Total On-Chip Power** | **3.301 W** | |
+
+![Power Analysis](Docs/power.png)
+> *Vivado power analysis report. The majority of dynamic power is consumed by the PS (ARM CPU), while the custom hardware logic remains highly efficient.*
+
+## 📊 System Performance Benchmark
+
+The following benchmark compares the end-to-end execution time of the FAST algorithm running on the **ARM Cortex-A53 CPU (OpenCV implementation)** versus the **FPGA Hardware Accelerator**.
 
 | Implementation | Processing Time (ms) | Throughput (FPS) | Speedup |
 | :--- | :--- | :--- | :--- |
 | **Software (ARM CPU)** | ~30.22 ms | ~33.0 FPS | 1.0x |
 | **Hardware (FPGA)** | **~11.05 ms** | **~90.5 FPS** | **2.73x** |
 
-![Performance Evidence](Docs/performance.png)
-
-### 2. Power Efficiency (Estimated)
-
-FPGA acceleration not only improves performance but also significantly reduces power consumption.
-
-| Metric | Software (Host PC/CPU) | Hardware (FPGA Edge) | Improvement |
-| :--- | :--- | :--- | :--- |
-| **Avg. Power Consumption** | ~45 W (Estimated) | **~5 W (Measured)** | **~9x More Efficient** |
-| **Energy Efficiency** | ~0.7 FPS/Watt | **~18.1 FPS/Watt** | **High Efficiency** |
-
-> *Note: FPGA power consumption is based on the typical board power of the PYNQ platform, whereas PC power is estimated based on standard CPU TDP.*
+![Performance Evidence](FPGA-FAST-Corner-Detector/Docs/performance.png)
+> *Terminal output demonstrating the hardware processing latency (~11ms) and high throughput.*
 
 ### ⚠️ Performance Note: Connection Interface
 The system supports both Gigabit Ethernet and USB-Ethernet (RNDIS) connections.
