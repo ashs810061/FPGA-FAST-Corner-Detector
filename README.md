@@ -30,6 +30,35 @@ The system utilizes a heterogeneous architecture where the ARM CPU handles netwo
 
 ![System Architecture](https://github.com/ashs810061/FPGA-FAST-Corner-Detector/blob/main/FPGA-FAST-Corner-Detector/Docs/architecture.png?raw=true)
 
+## 🧩 FAST IP Core Architecture
+The hardware accelerator is designed with a highly parallelized pipeline to achieve 100MHz real-time processing. The core logic consists of three main stages:
+
+### 1. FAST Feature Extraction Pipeline
+
+#### Line Buffer & Window Generation
+Uses 7 rows of Block RAM (BRAM) to store incoming pixel streams. The design simultaneously accesses a 7x7 pixel neighborhood in a single clock cycle to evaluate the Bresenham circle (Radius=3).
+
+![Line Buffer](https://github.com/ashs810061/FPGA-FAST-Corner-Detector/blob/main/FPGA-FAST-Corner-Detector/Docs/line_buffer.png?raw=true)
+
+#### Parallel Difference & Thresholding
+Calculates the absolute difference `|Ip - Ix|` for all 16 pixels on the circle concurrently. A dual-threshold mechanism (High/Low) generates bitmasks to identify strong and weak corners without stalling the pipeline.
+
+![Comparator Logic](https://github.com/ashs810061/FPGA-FAST-Corner-Detector/blob/main/FPGA-FAST-Corner-Detector/Docs/comparator.png?raw=true)
+
+### 2. Non-Maximum Suppression (NMS) Pipeline
+
+To refine the results, a 3x3 Non-Maximum Suppression stage filters out clustered corners.
+
+#### 3x3 Window Generation
+A secondary line buffer structure creates a 3x3 sliding window over the FAST score stream.
+
+![NMS Line Buffer](https://github.com/ashs810061/FPGA-FAST-Corner-Detector/blob/main/FPGA-FAST-Corner-Detector/Docs/nms_line_buffer.png?raw=true)
+
+#### Comparator Tree Logic
+A parallel comparator tree evaluates the center pixel against its 8 neighbors in a single cycle, ensuring only the local maximum is retained.
+
+![Comparator Tree](https://github.com/ashs810061/FPGA-FAST-Corner-Detector/blob/main/FPGA-FAST-Corner-Detector/Docs/comparator_tree.png?raw=true)
+
 ## ⚙️ Hardware Implementation Results
 
 The hardware accelerator is implemented on the **Xilinx Zynq UltraScale+** FPGA. The following data is obtained from the Vivado post-implementation reports.
@@ -132,6 +161,10 @@ FPGA-FAST-Corner-Detector/
 ├── Docs/                   # Documentation assets
 │   ├── demo.png
 │   ├── architecture.png
+│   ├── line_buffer.png
+│   ├── comparator.png
+│   ├── nms_line_buffer.png
+│   ├── comparator_tree.png
 │   ├── performance.png
 │   ├── utilization.png
 │   └── power.png
