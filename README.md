@@ -157,8 +157,12 @@ FPGA-FAST-Corner-Detector/
 │   ├── fast_nms.bit        # FPGA Bitstream
 │   └── fast_nms.hwh        # Hardware Handoff file
 ├── Hardware_Source/        # FPGA HLS/Verilog Source Code
-│   ├── fast_corner.cpp     # FAST Algorithm Core
-│   └── fast_corner.h       # Header file
+│   ├── fast.v              # FAST Algorithm Core
+│   ├── nms.v               # nms Algorithm Core
+│   ├── FAST_nms.v          # top module
+│   ├── tb_fast.sv          # testbench for fast
+│   ├── tb_nms.sv           # testbench for nms
+│   └── tb_fast_nms.sv      # testbench for top module
 ├── Docs/                   # Documentation assets
 │   ├── demo.png
 │   ├── architecture.png
@@ -173,7 +177,7 @@ FPGA-FAST-Corner-Detector/
 ```
 
 ## 👨‍💻 Author
-**Pin-Hao Chen (陳品澔)**
+**Pin-Hao Chen**
 * **Role**: Senior Undergraduate Student
 * **Institution**: Department of Electrical Engineering, National Chung Hsing University (NCHU)
 * **Focus**: Digital IC Design, FPGA Acceleration, Computer Architecture
